@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import { IERC4626 } from "openzeppelin/token/ERC20/extensions/ERC4626.sol";
-import { IERC20, UnitBaseSetup, PrizeVault } from "./UnitBaseSetup.t.sol";
+import { IERC20, UnitBaseSetup, PrizeVault, Vault } from "./UnitBaseSetup.t.sol";
 
 contract PrizeVaultDepositPermitTest is UnitBaseSetup {
 
@@ -58,7 +58,7 @@ contract PrizeVaultDepositPermitTest is UnitBaseSetup {
 
         vm.stopPrank();
         vm.expectRevert(
-            abi.encodeWithSelector(PrizeVault.PermitCallerNotOwner.selector, address(this), alice)
+            abi.encodeWithSelector(Vault.PermitCallerNotOwner.selector, address(this), alice)
         );
         vault.depositWithPermit(_amount, alice, block.timestamp, _v, _r, _s);
     }

@@ -15,7 +15,7 @@ import { PrizePoolMock } from "../../contracts/mock/PrizePoolMock.sol";
 import { YieldVault } from "../../contracts/mock/YieldVault.sol";
 import { Permit } from "../../contracts/utility/Permit.sol";
 
-import { PrizeVaultWrapper, PrizeVault } from "../../contracts/wrapper/PrizeVaultWrapper.sol";
+import { PrizeVaultWrapper, PrizeVault, Vault } from "../../contracts/wrapper/PrizeVaultWrapper.sol";
 
 contract UnitBaseSetup is Test, Permit {
 

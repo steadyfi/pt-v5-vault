@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { PrizeVault, IERC4626, PrizePool, ILiquidationSource } from "../PrizeVault.sol";
+import { ILiquidationSource } from "pt-v5-liquidator-interfaces/ILiquidationSource.sol";
+import { PrizePool } from "pt-v5-prize-pool/PrizePool.sol";
+import { TwabController } from "pt-v5-twab-controller/TwabController.sol";
+
+import { PrizeVault, IERC4626 } from "../PrizeVault.sol";
 
 /// @title  PoolTogether V5 Sponsorship Vault
 /// @author G9 Software Inc.

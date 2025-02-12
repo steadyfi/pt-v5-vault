@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import { ERC20Mock } from "openzeppelin/mocks/ERC20Mock.sol";
 import { IERC4626 } from "openzeppelin/token/ERC20/extensions/ERC4626.sol";
-import { IERC20, UnitBaseSetup, PrizeVault, YieldVault, IERC4626, PrizePool } from "./UnitBaseSetup.t.sol";
+import { IERC20, UnitBaseSetup, PrizeVault, YieldVault, IERC4626, PrizePool, Vault } from "./UnitBaseSetup.t.sol";
 
 contract PrizeVaultLiquidationTest is UnitBaseSetup {
 
@@ -275,7 +275,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
 
     function testTransferTokensOut_CallerNotLP() public {
         vm.startPrank(bob);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotLP.selector, bob, vault.liquidationPair()));
+        vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotLP.selector, bob, vault.liquidationPair()));
         vault.transferTokensOut(address(0), bob, address(underlyingAsset), 0);
         vm.stopPrank();
     }
@@ -283,7 +283,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
     function testTransferTokensOut_LiquidationTokenOutNotSupported() public {
         underlyingAsset.mint(address(vault), 1e18);
         vm.startPrank(vault.liquidationPair());
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationTokenOutNotSupported.selector, alice));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationTokenOutNotSupported.selector, alice));
         vault.transferTokensOut(address(0), bob, alice, 1);
         vm.stopPrank();
     }
@@ -291,10 +291,10 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
     function testTransferTokensOut_LiquidationAmountOutZero() public {
         vm.startPrank(vault.liquidationPair());
 
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationAmountOutZero.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationAmountOutZero.selector));
         vault.transferTokensOut(address(0), bob, address(underlyingAsset), 0);
 
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationAmountOutZero.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationAmountOutZero.selector));
         vault.transferTokensOut(address(0), bob, address(vault), 0);
 
         vm.stopPrank();
@@ -309,13 +309,13 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         // assets
         uint256 amountOut = vault.liquidatableBalanceOf(address(underlyingAsset));
         assertGt(amountOut, 0);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationExceedsAvailable.selector, amountOut + 1, amountOut));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationExceedsAvailable.selector, amountOut + 1, amountOut));
         vault.transferTokensOut(address(0), bob, address(underlyingAsset), amountOut + 1);
 
         // vault shares
         amountOut = vault.liquidatableBalanceOf(address(vault));
         assertGt(amountOut, 0);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationExceedsAvailable.selector, amountOut + 1, amountOut));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationExceedsAvailable.selector, amountOut + 1, amountOut));
         vault.transferTokensOut(address(0), bob, address(vault), amountOut + 1);
     }
 
@@ -343,7 +343,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         uint256 amountOut = supplyCapLeft; // 10 assets too much
         // (even though there is available yield, the supply cap will be exceeded by the yield fee)
 
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.MintLimitExceeded.selector, 11)); // yield fee is 11
+        vm.expectRevert(abi.encodeWithSelector(Vault.MintLimitExceeded.selector, 11)); // yield fee is 11
         vault.transferTokensOut(address(0), address(this), address(vault), amountOut);
     }
 
@@ -364,7 +364,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         prizeToken.mint(address(prizePool), 1e18);
         vm.startPrank(bob);
 
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotLP.selector, bob, vault.liquidationPair()));
+        vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotLP.selector, bob, vault.liquidationPair()));
         vault.verifyTokensIn(address(prizeToken), 1e18, "");
 
         vm.stopPrank();
@@ -374,7 +374,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         prizeToken.mint(address(prizePool), 1e18);
         vm.startPrank(vault.liquidationPair());
 
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LiquidationTokenInNotPrizeToken.selector, address(underlyingAsset), address(prizeToken)));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LiquidationTokenInNotPrizeToken.selector, address(underlyingAsset), address(prizeToken)));
         vault.verifyTokensIn(address(underlyingAsset), 1e18, "");
 
         vm.stopPrank();
@@ -395,14 +395,14 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         vault.setYieldFeeRecipient(bob);
 
         vm.startPrank(alice);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotYieldFeeRecipient.selector, alice, bob));
+        vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotYieldFeeRecipient.selector, alice, bob));
         vault.claimYieldFeeShares(100);
         vm.stopPrank();
     }
 
     function testClaimYieldFeeShares_MintZeroShares() public {
         vault.setYieldFeeRecipient(address(this));
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.MintZeroShares.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.MintZeroShares.selector));
         vault.claimYieldFeeShares(0);
     }
 
@@ -421,7 +421,7 @@ contract PrizeVaultLiquidationTest is UnitBaseSetup {
         assertGt(yieldFeeBalance, 0);
         
         vm.startPrank(bob);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.SharesExceedsYieldFeeBalance.selector, yieldFeeBalance + 1, yieldFeeBalance));
+        vm.expectRevert(abi.encodeWithSelector(Vault.SharesExceedsYieldFeeBalance.selector, yieldFeeBalance + 1, yieldFeeBalance));
         vault.claimYieldFeeShares(yieldFeeBalance + 1);
         vm.stopPrank();
     }

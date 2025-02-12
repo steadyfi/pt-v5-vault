@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import { IERC4626 } from "openzeppelin/token/ERC20/extensions/ERC4626.sol";
-import { IERC20, UnitBaseSetup, PrizeVault } from "./UnitBaseSetup.t.sol";
+import { IERC20, UnitBaseSetup, PrizeVault, Vault } from "./UnitBaseSetup.t.sol";
 
 contract PrizeVaultDepositLossyProtection is UnitBaseSetup {
 
@@ -103,7 +103,7 @@ contract PrizeVaultDepositLossyProtection is UnitBaseSetup {
 
         vm.startPrank(alice);
         underlyingAsset.approve(address(vault), 1e18);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LossyDeposit.selector, 2e18 - 1, 2e18));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LossyDeposit.selector, 2e18 - 1, 2e18));
         vault.deposit(1e18, alice);
         vm.stopPrank();
     }
@@ -123,7 +123,7 @@ contract PrizeVaultDepositLossyProtection is UnitBaseSetup {
 
         vm.startPrank(alice);
         underlyingAsset.approve(address(vault), 1e18);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LossyDeposit.selector, 2e18 - 1, 2e18));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LossyDeposit.selector, 2e18 - 1, 2e18));
         vault.mint(1e18, alice);
         vm.stopPrank();
     }
@@ -157,7 +157,7 @@ contract PrizeVaultDepositLossyProtection is UnitBaseSetup {
         );
 
         vm.startPrank(alice);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LossyDeposit.selector, 2e18 - 1, 2e18));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LossyDeposit.selector, 2e18 - 1, 2e18));
         vault.depositWithPermit(1e18, alice, block.timestamp, _v, _r, _s);
         vm.stopPrank();
     }

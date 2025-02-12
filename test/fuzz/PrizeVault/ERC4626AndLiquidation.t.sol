@@ -6,7 +6,7 @@ import { ERC4626Test, IMockERC20 } from "erc4626-tests/ERC4626.test.sol";
 import { PrizePool } from "pt-v5-prize-pool/PrizePool.sol";
 import { TwabController } from "pt-v5-twab-controller/TwabController.sol";
 
-import { PrizeVault } from "../../../src/PrizeVault.sol";
+import { PrizeVault, Vault } from "../../../src/PrizeVault.sol";
 
 import { IERC4626, IERC20 } from "openzeppelin/token/ERC20/extensions/ERC4626.sol";
 import { ERC20Mock } from "openzeppelin/mocks/ERC20Mock.sol";
@@ -156,7 +156,7 @@ contract PrizeVaultERC4626AndLiquidationFuzzTest is ERC4626Test {
 
     function propLiquidatableBalanceOf() public {
         uint256 liquidatableBalanceOf = _call_vault(
-            abi.encodeWithSelector(PrizeVault.liquidatableBalanceOf.selector, _underlying_)
+            abi.encodeWithSelector(Vault.liquidatableBalanceOf.selector, _underlying_)
         );
 
         uint256 totalAssets = prizeVault.totalPreciseAssets();
@@ -181,7 +181,7 @@ contract PrizeVaultERC4626AndLiquidationFuzzTest is ERC4626Test {
 
         address tokenOut = lp.tokenOut();
         uint256 yield = _call_vault(
-            abi.encodeWithSelector(PrizeVault.liquidatableBalanceOf.selector, tokenOut)
+            abi.encodeWithSelector(Vault.liquidatableBalanceOf.selector, tokenOut)
         );
 
         // Skips test if no yield is liquidatable

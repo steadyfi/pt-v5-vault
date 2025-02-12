@@ -18,7 +18,7 @@ import { PrizePoolMock } from "../../contracts/mock/PrizePoolMock.sol";
 import { YieldVault } from "../../contracts/mock/YieldVault.sol";
 import { Permit } from "../../contracts/utility/Permit.sol";
 
-import { PrizeVault } from "../../../src/PrizeVault.sol";
+import { PrizeVault, Vault } from "../../../src/PrizeVault.sol";
 
 contract PrizeVaultFuzzHarness is Permit, StdCheats, StdUtils {
 
@@ -286,7 +286,7 @@ contract PrizeVaultFuzzHarness is Permit, StdCheats, StdUtils {
         // deposit with caller and owner signature
         vm.startPrank(_actor(callerSeed));
         if (_actor(callerSeed) != _actor(ownerSeed)) {
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.PermitCallerNotOwner.selector, _actor(callerSeed), _actor(ownerSeed)));
+            vm.expectRevert(abi.encodeWithSelector(Vault.PermitCallerNotOwner.selector, _actor(callerSeed), _actor(ownerSeed)));
         } else {
             vm.expectEmit();
             emit Deposit(_actor(callerSeed), _actor(ownerSeed), assets, vault.previewDeposit(assets));
@@ -300,7 +300,7 @@ contract PrizeVaultFuzzHarness is Permit, StdCheats, StdUtils {
     function claimYieldFeeShares(uint256 callerSeed, uint256 shares) public useCurrentTime useActor(callerSeed) {
         shares = _bound(shares, 0, vault.yieldFeeBalance());
         if (currentActor != vault.yieldFeeRecipient()) {
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotYieldFeeRecipient.selector, currentActor, vault.yieldFeeRecipient()));
+            vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotYieldFeeRecipient.selector, currentActor, vault.yieldFeeRecipient()));
         }
         vault.claimYieldFeeShares(shares);
     }
@@ -314,7 +314,7 @@ contract PrizeVaultFuzzHarness is Permit, StdCheats, StdUtils {
         }
         amountOut = _bound(amountOut, 0, vault.liquidatableBalanceOf(tokenOut));
         if (currentActor != vault.liquidationPair()) {
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotLP.selector, currentActor, vault.liquidationPair()));
+            vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotLP.selector, currentActor, vault.liquidationPair()));
         }
         vault.transferTokensOut(address(0), _actor(receiverSeed), tokenOut, amountOut);
     }
@@ -325,7 +325,7 @@ contract PrizeVaultFuzzHarness is Permit, StdCheats, StdUtils {
     function verifyTokensIn(uint88 amountIn, uint256 callerSeed) public useCurrentTime useActor(callerSeed) {
         prizeToken.mint(address(prizePool), amountIn);
         if (currentActor != vault.liquidationPair()) {
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.CallerNotLP.selector, currentActor, vault.liquidationPair()));
+            vm.expectRevert(abi.encodeWithSelector(Vault.CallerNotLP.selector, currentActor, vault.liquidationPair()));
         }
         vault.verifyTokensIn(address(prizeToken), amountIn, "");
     }

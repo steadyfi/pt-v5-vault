@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import { IERC4626 } from "openzeppelin/token/ERC20/extensions/ERC4626.sol";
-import { IERC20, UnitBaseSetup, PrizeVault } from "./UnitBaseSetup.t.sol";
+import { IERC20, UnitBaseSetup, PrizeVault, Vault } from "./UnitBaseSetup.t.sol";
 import { YieldVaultMaxSetter } from "../../contracts/mock/YieldVaultMaxSetter.sol";
 
 contract PrizeVaultWithdrawalSlippageTest is UnitBaseSetup {
@@ -38,7 +38,7 @@ contract PrizeVaultWithdrawalSlippageTest is UnitBaseSetup {
             uint256 snap = vm.snapshot();
 
             // should fail if 99 shares is passed as the limit
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.MaxSharesExceeded.selector, 100, 99));
+            vm.expectRevert(abi.encodeWithSelector(Vault.MaxSharesExceeded.selector, 100, 99));
             vault.withdraw(50, alice, alice, 99);
 
             // should succeed if 100 shares is passed as the limit
@@ -85,7 +85,7 @@ contract PrizeVaultWithdrawalSlippageTest is UnitBaseSetup {
             uint256 snap = vm.snapshot();
 
             // should fail if 51 assets is passed as the threshold
-            vm.expectRevert(abi.encodeWithSelector(PrizeVault.MinAssetsNotReached.selector, 50, 51));
+            vm.expectRevert(abi.encodeWithSelector(Vault.MinAssetsNotReached.selector, 50, 51));
             vault.redeem(100, alice, alice, 51);
 
             // should succeed if 50 assets is passed as the threshold

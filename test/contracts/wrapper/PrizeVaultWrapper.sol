@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { PrizeVault, IERC4626, IERC20, PrizePool } from "../../../src/PrizeVault.sol";
+import { PrizePool } from "pt-v5-prize-pool/PrizePool.sol";
+import { PrizeVault, IERC4626, IERC20, Vault } from "../../../src/PrizeVault.sol";
 
 contract PrizeVaultWrapper is PrizeVault {
 

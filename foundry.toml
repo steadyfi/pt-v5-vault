@@ -7,6 +7,10 @@ solc = "0.8.24"
 fs_permissions = [{ access = "read", path = "./broadcast" }]
 gas_reports = ["PrizeVault", "PrizeVaultWrapper", "PrizeVaultFactory"]
 no_match_contract = "Integration"
+memory_limit = 13421772800
+gas_limit = "18446744073709551615"
+block_gas_limit = "18446744073709551615"
+allow_internal_expect_revert = true
 
 [fuzz]
 runs = 1000

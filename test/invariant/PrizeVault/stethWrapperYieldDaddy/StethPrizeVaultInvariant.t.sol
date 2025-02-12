@@ -17,6 +17,8 @@ contract StethPrizeVaultInvariant is PrizeVaultInvariant {
     StethPrizeVaultFuzzHarness public aaveVaultHarness;
 
     function setUp() external override {
+        vm.pauseGasMetering();
+
         // optimism fork:
         mainnetFork = vm.createFork(vm.rpcUrl("mainnet"), forkBlock);
         vm.selectFork(mainnetFork);

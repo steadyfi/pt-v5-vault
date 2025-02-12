@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { UnitBaseSetup, PrizePool, TwabController, ERC20, IERC20, IERC4626, YieldVault } from "./UnitBaseSetup.t.sol";
+import { UnitBaseSetup, PrizePool, TwabController, ERC20, IERC20, IERC4626, YieldVault, Vault } from "./UnitBaseSetup.t.sol";
 import { IPrizeHooks, PrizeHooks } from "../../../src/interfaces/IPrizeHooks.sol";
 import { ERC20BrokenDecimalMock } from "../../contracts/mock/ERC20BrokenDecimalMock.sol";
 
@@ -46,7 +46,7 @@ contract PrizeVaultTest is UnitBaseSetup {
     }
 
     function testConstructorYieldVaultZero() external {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.YieldVaultZeroAddress.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.YieldVaultZeroAddress.selector));
 
         new PrizeVault(
             "PoolTogether aEthDAI Prize Token (PTaEthDAI)",
@@ -61,8 +61,9 @@ contract PrizeVaultTest is UnitBaseSetup {
         );
     }
 
-    function testFailConstructorPrizePoolZero() external {
+    function test_Revert_If_ConstructorPrizePoolZero() external {
         // Fails because `prizePool.twabController()` is not callable on the zero address
+        vm.expectRevert();
         new PrizeVault(
             "PoolTogether aEthDAI Prize Token (PTaEthDAI)",
             "PTaEthDAI",
@@ -77,7 +78,7 @@ contract PrizeVaultTest is UnitBaseSetup {
     }
 
     function testConstructorOwnerZero() external {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.OwnerZeroAddress.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.OwnerZeroAddress.selector));
 
         new PrizeVault(
             "PoolTogether aEthDAI Prize Token (PTaEthDAI)",
@@ -187,7 +188,7 @@ contract PrizeVaultTest is UnitBaseSetup {
             "Test Yield Vault",
             "yvTest"
         );
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.FailedToGetAssetDecimals.selector, address(brokenDecimalToken)));
+        vm.expectRevert(abi.encodeWithSelector(Vault.FailedToGetAssetDecimals.selector, address(brokenDecimalToken)));
         new PrizeVault(
             "PoolTogether Decimal Fail",
             "pDecFail",
@@ -476,31 +477,31 @@ contract PrizeVaultTest is UnitBaseSetup {
 
     function testPreviewWithdraw_ZeroTotalAssets() public {
         assertEq(vault.totalPreciseAssets(), 0);
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.ZeroTotalAssets.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.ZeroTotalAssets.selector));
         vault.previewWithdraw(1);
     }
 
     /* ============ depositAndMint ============ */
 
     function testDepositAndMint_DepositZeroAssets() public {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.DepositZeroAssets.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.DepositZeroAssets.selector));
         vault.depositAndMint(alice, alice, 0, 1);
     }
 
     function testDepositAndMint_MintZeroShares() public {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.MintZeroShares.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.MintZeroShares.selector));
         vault.depositAndMint(alice, alice, 1, 0);
     }
 
     /* ============ burnAndWithdraw ============ */
 
     function testDepositAndMint_BurnZeroShares() public {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.BurnZeroShares.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.BurnZeroShares.selector));
         vault.burnAndWithdraw(alice, alice, alice, 0, 1);
     }
 
     function testDepositAndMint_WithdrawZeroAssets() public {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.WithdrawZeroAssets.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.WithdrawZeroAssets.selector));
         vault.burnAndWithdraw(alice, alice, alice, 1, 0);
     }
 
@@ -665,7 +666,7 @@ contract PrizeVaultTest is UnitBaseSetup {
     }
 
     function testSetLiquidationPairNotZeroAddress() public {
-        vm.expectRevert(abi.encodeWithSelector(PrizeVault.LPZeroAddress.selector));
+        vm.expectRevert(abi.encodeWithSelector(Vault.LPZeroAddress.selector));
         vault.setLiquidationPair(address(0));
     }
 
@@ -712,7 +713,7 @@ contract PrizeVaultTest is UnitBaseSetup {
         vault.setYieldFeePercentage(max); // ok
 
         vm.expectRevert(
-            abi.encodeWithSelector(PrizeVault.YieldFeePercentageExceedsMax.selector, max + 1, max)
+            abi.encodeWithSelector(Vault.YieldFeePercentageExceedsMax.selector, max + 1, max)
         );
         vault.setYieldFeePercentage(max + 1); // not ok
     }
