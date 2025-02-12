@@ -660,7 +660,7 @@ abstract contract Vault is TwabERC20, IERC4626, ILiquidationSource, Ownable {
     /// @inheritdoc ILiquidationSource
     /// @dev Returns the liquid amount of `_tokenOut` minus any yield fees.
     /// @dev Supports the liquidation of either assets or prize vault shares.
-    function liquidatableBalanceOf(address _tokenOut) external view returns (uint256) {
+    function liquidatableBalanceOf(address _tokenOut) external virtual view returns (uint256) {
         uint256 _totalDebt = totalDebt();
         uint256 _yieldFeePercentage = yieldFeePercentage;
         uint256 _maxAmountOut;
